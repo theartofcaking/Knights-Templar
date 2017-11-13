@@ -1,0 +1,42 @@
+pragma solidity ^0.4.16;
+
+contract KnightsTemplar {
+   uint public kWh_rate = 1000;
+   mapping (address => uint) energyAccount;
+   mapping (address => uint) coinAccount;
+   address public owner;
+   
+   function KnightsTemplar() {
+       owner = msg.sender;
+   }
+   
+   modifier onlyOwner {
+       require (msg.sender == owner);
+       _;
+   }
+   
+   function setRate(uint rate) onlyOwner {
+       kWh_rate = rate;
+   }
+
+   function sellEnergy(uint kwh) public {
+       coinAccount[msg.sender] += (kwh * kWh_rate);
+   }
+
+   function buyEnergy(uint _coin) returns (bool) {
+       require (coinAccount[msg.sender] >= _coin); {
+                coinAccount[msg.sender] -= _coin;
+                energyAccount[msg.sender] += (_coin / kWh_rate);
+       }
+   }
+   
+   function getEnergyAccount() returns (uint kwh) {
+       return energyAccount[msg.sender];
+   }
+
+   function getCoinAccount() returns (uint _coin) {
+       return coinAccount[msg.sender];
+   }
+}
+
+// 2017/11/12 Nathan Frederick, Maro Vardanyan //
